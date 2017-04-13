@@ -1,6 +1,7 @@
 package com.leon.laotieparty;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +29,15 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.ChannelV
 
     @Override
     public void onBindViewHolder(ChannelViewHolder holder, int position) {
-        ((ChannelItemView)holder.itemView).bindView(mList.get(position));
+        ChannelItemView itemView = (ChannelItemView) holder.itemView;
+        itemView.bindView(mList.get(position));
+        itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContext, PartyRoomActivity.class);
+                mContext.startActivity(intent);
+            }
+        });
     }
 
     @Override

@@ -26,6 +26,9 @@
         <activity android:name=".ChannelActivity"
             android:theme="@style/AppTheme.FullScreen"/>
 
+        <activity android:name=".PartyRoomActivity"
+            android:theme="@style/AppTheme.FullScreen"/>
+
     </application>
 
 </manifest>

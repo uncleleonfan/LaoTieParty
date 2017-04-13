@@ -73,7 +73,7 @@ public class AgoraManager {
      * 初始化RtcEngine
      */
     public void init(Context context) {
-        //创建RtcEngine对象
+        //创建RtcEngine对象，mRtcEventHandler为RtcEngine的回调
         mRtcEngine = RtcEngine.create(context, context.getString(R.string.private_app_id), mRtcEventHandler);
         //开启视频功能
         mRtcEngine.enableVideo();

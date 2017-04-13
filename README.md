@@ -99,7 +99,7 @@ RtcEngine是Agora SDK的核心类，叔用一个管理类AgoraManager进行了�
      * 初始化RtcEngine
      */
     public void init(Context context) {
-        //创建RtcEngine对象
+        //创建RtcEngine对象， mRtcEventHandler为RtcEngine的回调
         mRtcEngine = RtcEngine.create(context, context.getString(R.string.private_app_id), mRtcEventHandler);
         //开启视频功能
         mRtcEngine.enableVideo();
@@ -140,3 +140,22 @@ RtcEngine是Agora SDK的核心类，叔用一个管理类AgoraManager进行了�
     }
 
 #### 3. 添加SurfaceView到布局 ####
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //先清空容器
+        mFrameLayout.removeAllViews();
+        //设置本地前置摄像头预览并启动
+        AgoraManager.getInstance().setupLocalVideo(getApplicationContext()).startPreview();
+        //将本地摄像头预览的SurfaceView添加到容器中
+        mFrameLayout.addView(AgoraManager.getInstance().getLocalSurfaceView());
+    }
+#### 4. 停止预览 ####
+    /**
+     * 停止预览
+     */
+    @Override
+    protected void onPause() {
+        super.onPause();
+        AgoraManager.getInstance().stopPreview();
+    }
