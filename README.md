@@ -168,7 +168,7 @@ RtcEngine是Agora SDK的核心类，叔用一个管理类AgoraManager进行了�
 
 1人全屏其实就是前置摄像头预览效果。
 
-#### 前置摄像头预览 ####
+####1. 前置摄像头预览 ####
     //设置前置摄像头预览并开启
     AgoraManager.getInstance()
             .setupLocalVideo(getApplicationContext())
@@ -176,7 +176,7 @@ RtcEngine是Agora SDK的核心类，叔用一个管理类AgoraManager进行了�
     //将摄像头预览的SurfaceView加入PartyRoomLayout
     mPartyRoomLayout.addView(AgoraManager.getInstance().getLocalSurfaceView());
 
-#### PartyRoomLayout处理1人全屏 ####
+####2. PartyRoomLayout处理1人全屏 ####
     /**
      * 测量一个孩子的情况，孩子的宽高和父容器即PartyRoomLayout一样
      */
@@ -192,6 +192,37 @@ RtcEngine是Agora SDK的核心类，叔用一个管理类AgoraManager进行了�
         View child = getChildAt(0);
         child.layout(0, 0, child.getMeasuredWidth(), child.getMeasuredHeight());
     }
+
+####3. 加入频道 ####
+从频道列表跳转过来后，需要加入到用户所选的频道。
+
+    //更新频道的TextView
+    mChannel = (TextView) findViewById(R.id.channel);
+    String channel = getIntent().getStringExtra(“Channel”);
+    mChannel.setText(channel);
+
+	//在AgoraManager中封装了加入频道的API
+	AgoraManager.getInstance()
+                .setupLocalVideo(getApplicationContext())
+                .joinChannel(channel)//加入频道
+                .startPreview();
+
+#### 4. 挂断 ####
+![](img/end_call.jpg)
+
+当用户点击挂断按钮可以退出频道
+
+    mEndCall = (ImageButton) findViewById(R.id.end_call);
+    mEndCall.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            //AgoraManager里面封装了挂断的API, 退出频道
+            AgoraManager.getInstance().leaveChannel();
+            finish();
+        }
+    });
+
+
 
 
 

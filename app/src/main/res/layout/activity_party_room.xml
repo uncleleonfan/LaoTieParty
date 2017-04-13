@@ -9,5 +9,21 @@
         android:layout_height="match_parent">
     </com.leon.laotieparty.PartyRoomLayout>
 
+    <TextView
+        android:id="@+id/channel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        android:layout_margin="8dp"/>
+
+    <ImageButton
+        android:id="@+id/end_call"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@mipmap/btn_end_call"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="20dp"/>
+
 
 </FrameLayout>

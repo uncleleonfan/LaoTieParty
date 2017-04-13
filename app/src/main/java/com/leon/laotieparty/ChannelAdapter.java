@@ -28,13 +28,14 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.ChannelV
     }
 
     @Override
-    public void onBindViewHolder(ChannelViewHolder holder, int position) {
+    public void onBindViewHolder(ChannelViewHolder holder, final int position) {
         ChannelItemView itemView = (ChannelItemView) holder.itemView;
         itemView.bindView(mList.get(position));
         itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(mContext, PartyRoomActivity.class);
+                intent.putExtra("Channel", mList.get(position).getChannelId());
                 mContext.startActivity(intent);
             }
         });
