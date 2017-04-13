@@ -70,7 +70,7 @@
         return true;
     }
 
-## 频道界面 (ChannelActivity)##
+## 频道界面 (ChannelActivity) ##
 点击```开PA!```，进入频道选择界面
 
 ![](img/channel.png)
@@ -160,7 +160,7 @@ RtcEngine是Agora SDK的核心类，叔用一个管理类AgoraManager进行了�
         AgoraManager.getInstance().stopPreview();
     }
 
-## 聊天室 (PartyRoomActivity)##
+## 聊天室 (PartyRoomActivity) ##
 点击频道列表中的选项，跳转到聊天室界面。聊天室界面显示规则是：1个人是全屏，2个人是2分屏，3-4个人是4分屏，5-6个人是6分屏， 4分屏和6分屏模式下，双击一个小窗，窗会变大，其余小窗在底部排列。最多支持六人同时聊天。基于这种需求，叔决定写一个自定义控件PartyRoomLayout来完成。PartyRoomLayout直接继承ViewGroup，根据不同的显示模式来完成孩子的测量和布局。
 
 ### 1人全屏 ###
@@ -168,7 +168,8 @@ RtcEngine是Agora SDK的核心类，叔用一个管理类AgoraManager进行了�
 
 1人全屏其实就是前置摄像头预览效果。
 
-####1. 前置摄像头预览 ####
+#### 前置摄像头预览 ####
+
     //设置前置摄像头预览并开启
     AgoraManager.getInstance()
             .setupLocalVideo(getApplicationContext())
@@ -176,7 +177,8 @@ RtcEngine是Agora SDK的核心类，叔用一个管理类AgoraManager进行了�
     //将摄像头预览的SurfaceView加入PartyRoomLayout
     mPartyRoomLayout.addView(AgoraManager.getInstance().getLocalSurfaceView());
 
-####2. PartyRoomLayout处理1人全屏 ####
+#### PartyRoomLayout处理1人全屏 ####
+
     /**
      * 测量一个孩子的情况，孩子的宽高和父容器即PartyRoomLayout一样
      */
@@ -193,7 +195,8 @@ RtcEngine是Agora SDK的核心类，叔用一个管理类AgoraManager进行了�
         child.layout(0, 0, child.getMeasuredWidth(), child.getMeasuredHeight());
     }
 
-####3. 加入频道 ####
+#### 加入频道 ####
+
 从频道列表跳转过来后，需要加入到用户所选的频道。
 
     //更新频道的TextView
@@ -207,7 +210,8 @@ RtcEngine是Agora SDK的核心类，叔用一个管理类AgoraManager进行了�
                 .joinChannel(channel)//加入频道
                 .startPreview();
 
-#### 4. 挂断 ####
+#### 挂断 ####
+
 ![](img/end_call.jpg)
 
 当用户点击挂断按钮可以退出频道
@@ -222,8 +226,149 @@ RtcEngine是Agora SDK的核心类，叔用一个管理类AgoraManager进行了�
         }
     });
 
+### 二分屏 ###
+![](img/two.png)
+#### 事件监听器 ####
+IRtcEngineEventHandler类里面封装了Agora SDK里面的很多事件回调，在AgoraManager中我们创建了IRtcEngineEventHandler的一个对象mRtcEventHandler，并在创建RtcEngine时传入。
+
+    private IRtcEngineEventHandler mRtcEventHandler = new IRtcEngineEventHandler() {
+
+        /**
+         * 当获取用户uid的远程视频的回调
+         */
+        @Override
+        public void onFirstRemoteVideoDecoded(int uid, int width, int height, int elapsed) {
+            if (mOnPartyListener != null) {
+                mOnPartyListener.onGetRemoteVideo(uid);
+            }
+        }
+
+        /**
+         * 加入频道成功的回调
+         */
+        @Override
+        public void onJoinChannelSuccess(String channel, int uid, int elapsed) {
+            if (mOnPartyListener != null) {
+                mOnPartyListener.onJoinChannelSuccess(channel, uid);
+            }
+        }
+
+        /**
+         * 退出频道
+         */
+        @Override
+        public void onLeaveChannel(RtcStats stats) {
+            if (mOnPartyListener != null) {
+                mOnPartyListener.onLeaveChannelSuccess();
+            }
+        }
+
+        /**
+         * 用户uid离线时的回调
+         */
+        @Override
+        public void onUserOffline(int uid, int reason) {
+            if (mOnPartyListener != null) {
+                mOnPartyListener.onUserOffline(uid);
+            }
+        }
+    };
+
+同时，我们也提供了一个接口，暴露给AgoraManager外部。
+
+    public interface OnPartyListener {
+
+        void onJoinChannelSuccess(String channel, int uid);
+
+        void onGetRemoteVideo(int uid);
+
+        void onLeaveChannelSuccess();
+
+        void onUserOffline(int uid);
+    }
+
+在PartyRoomActivity中监听事件
+
+    AgoraManager.getInstance()
+            .setupLocalVideo(getApplicationContext())
+            .setOnPartyListener(mOnPartyListener)//设置监听
+            .joinChannel(channel)
+            .startPreview();
+
+#### 设置远程用户视频 ####
 
 
+    private AgoraManager.OnPartyListener mOnPartyListener = new AgoraManager.OnPartyListener() {
 
+        /**
+         * 获取远程用户视频的回调
+         */
+        @Override
+        public void onGetRemoteVideo(final int uid) {
+			//操作UI，需要切换到主线程
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    //设置远程用户的视频
+                    AgoraManager.getInstance().setupRemoteVideo(PartyRoomActivity.this, uid);
+                    //将远程用户视频的SurfaceView添加到PartyRoomLayout中，这会触发PartyRoomLayout重新走一遍绘制流程
+                    mPartyRoomLayout.addView(AgoraManager.getInstance().getSurfaceView(uid));
+                }
+            });
+        }
+
+    };
+
+#### 测量布局二分屏 ####
+当第一次回调onGetRemoteVideo时，说明现在有两个用户了，所以在PartyRoomLayout中需要对二分屏模式进行处理
+
+    /**
+     * 二分屏时的测量
+     */
+    private void measureTwoChild(int widthMeasureSpec, int heightMeasureSpec) {
+        for (int i = 0; i < getChildCount(); i++) {
+            View child = getChildAt(i);
+            int size = MeasureSpec.getSize(heightMeasureSpec);
+            //孩子高度为父容器高度的一半
+            int childHeightMeasureSpec = MeasureSpec.makeMeasureSpec(size / 2, MeasureSpec.EXACTLY);
+            child.measure(widthMeasureSpec, childHeightMeasureSpec);
+        }
+    }
+
+    /**
+     * 二分屏模式的布局
+     */
+    private void layoutTwoChild() {
+        int left = 0;
+        int top = 0;
+        int right = getMeasuredWidth();
+        int bottom = getChildAt(0).getMeasuredHeight();
+        for (int i = 0; i < getChildCount(); i++) {
+            View child = getChildAt(i);
+            child.layout(left, top, right, bottom);
+            top += child.getMeasuredHeight();
+            bottom += child.getMeasuredHeight();
+        }
+    }
+
+
+#### 用户离线时的处理 ####
+当有用户离线时，我们需要移除该用户视频对应的SurfaceView
+
+    private AgoraManager.OnPartyListener mOnPartyListener = new AgoraManager.OnPartyListener() {
+
+        @Override
+        public void onUserOffline(final int uid) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    //从PartyRoomLayout移除远程视频的SurfaceView
+                    mPartyRoomLayout.removeView(AgoraManager.getInstance().getSurfaceView(uid));
+                    //清除缓存的SurfaceView
+                    AgoraManager.getInstance().removeSurfaceView(uid);
+                }
+            });
+        }
+    };
 
 

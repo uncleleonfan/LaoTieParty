@@ -157,10 +157,14 @@ public class PartyRoomLayout extends ViewGroup {
         return mGestureDetector.onTouchEvent(event);
     }
 
+    /**
+     * 二分屏时的测量
+     */
     private void measureTwoChild(int widthMeasureSpec, int heightMeasureSpec) {
         for (int i = 0; i < getChildCount(); i++) {
             View child = getChildAt(i);
             int size = MeasureSpec.getSize(heightMeasureSpec);
+            //孩子高度为父容器高度的一半
             int childHeightMeasureSpec = MeasureSpec.makeMeasureSpec(size / 2, MeasureSpec.EXACTLY);
             child.measure(widthMeasureSpec, childHeightMeasureSpec);
         }
@@ -231,6 +235,9 @@ public class PartyRoomLayout extends ViewGroup {
         }
     }
 
+    /**
+     * 二分屏模式的布局
+     */
     private void layoutTwoChild() {
         int left = 0;
         int top = 0;

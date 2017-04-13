@@ -47,6 +47,9 @@ public class AgoraManager {
 
     private IRtcEngineEventHandler mRtcEventHandler = new IRtcEngineEventHandler() {
 
+        /**
+         * 当获取用户uid的远程视频的回调
+         */
         @Override
         public void onFirstRemoteVideoDecoded(int uid, int width, int height, int elapsed) {
             if (mOnPartyListener != null) {
@@ -54,17 +57,33 @@ public class AgoraManager {
             }
         }
 
+        /**
+         * 加入频道成功的回调
+         */
         @Override
         public void onJoinChannelSuccess(String channel, int uid, int elapsed) {
             if (mOnPartyListener != null) {
-                mOnPartyListener.onJoinSuccess(channel, uid);
+                mOnPartyListener.onJoinChannelSuccess(channel, uid);
             }
         }
 
+        /**
+         * 退出频道
+         */
         @Override
         public void onLeaveChannel(RtcStats stats) {
             if (mOnPartyListener != null) {
-                mOnPartyListener.onLeaveSuccess();
+                mOnPartyListener.onLeaveChannelSuccess();
+            }
+        }
+
+        /**
+         * 用户uid离线时的回调
+         */
+        @Override
+        public void onUserOffline(int uid, int reason) {
+            if (mOnPartyListener != null) {
+                mOnPartyListener.onUserOffline(uid);
             }
         }
     };
@@ -82,6 +101,7 @@ public class AgoraManager {
         mRtcEngine.setChannelProfile(Constants.CHANNEL_PROFILE_COMMUNICATION);//设置为通信模式（默认）
 //        mRtcEngine.setChannelProfile(Constants.CHANNEL_PROFILE_LIVE_BROADCASTING);设置为直播模式
 //        mRtcEngine.setChannelProfile(Constants.CHANNEL_PROFILE_GAME);设置为游戏模式
+
     }
 
     /**
@@ -122,12 +142,18 @@ public class AgoraManager {
         mRtcEngine.leaveChannel();
     }
 
+    public void removeSurfaceView(int uid) {
+        mSurfaceViews.remove(uid);
+    }
+
     public interface OnPartyListener {
-        void onJoinSuccess(String channel, int uid);
+        void onJoinChannelSuccess(String channel, int uid);
 
         void onGetRemoteVideo(int uid);
 
-        void onLeaveSuccess();
+        void onLeaveChannelSuccess();
+
+        void onUserOffline(int uid);
     }
 
     public AgoraManager setOnPartyListener(OnPartyListener listener) {

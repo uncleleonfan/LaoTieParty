@@ -6,7 +6,8 @@
     <com.leon.laotieparty.PartyRoomLayout
         android:id="@+id/party_room_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:animateLayoutChanges="true">
     </com.leon.laotieparty.PartyRoomLayout>
 
     <TextView
