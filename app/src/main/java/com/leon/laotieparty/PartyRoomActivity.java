@@ -10,10 +10,22 @@ import android.support.v7.app.AppCompatActivity;
 
 public class PartyRoomActivity extends AppCompatActivity {
 
+    private PartyRoomLayout mPartyRoomLayout;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_party_room);
+
+        mPartyRoomLayout = (PartyRoomLayout) findViewById(R.id.party_room_layout);
+
+        //设置前置摄像头预览并开启
+        AgoraManager.getInstance()
+                .setupLocalVideo(getApplicationContext())
+                .startPreview();
+        //将摄像头预览的SurfaceView加入PartyRoomLayout
+        mPartyRoomLayout.addView(AgoraManager.getInstance().getLocalSurfaceView());
+
     }
 
 

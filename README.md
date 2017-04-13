@@ -43,7 +43,7 @@
 至此，Agoria SDK集成已经完毕，似不似如丝般顺滑？如果官方能够提供Gradle依赖，还可以省掉下载SDK和导入库文件的步骤，那就更滑了。接下来我们就可以愉快地和SDK玩耍了。
 
 # Agoria SDK实践 #
-## 主界面 ##
+## 主界面（MainActivity）##
 ![](img/main.png)
 
 在主界面，我们需要检查先Camera和Audio权限，以适配Andriod6.0及以上版本。
@@ -70,7 +70,7 @@
         return true;
     }
 
-## 频道界面 ##
+## 频道界面 (ChannelActivity)##
 点击```开PA!```，进入频道选择界面
 
 ![](img/channel.png)
@@ -159,3 +159,40 @@ RtcEngine是Agora SDK的核心类，叔用一个管理类AgoraManager进行了�
         super.onPause();
         AgoraManager.getInstance().stopPreview();
     }
+
+## 聊天室 (PartyRoomActivity)##
+点击频道列表中的选项，跳转到聊天室界面。聊天室界面显示规则是：1个人是全屏，2个人是2分屏，3-4个人是4分屏，5-6个人是6分屏， 4分屏和6分屏模式下，双击一个小窗，窗会变大，其余小窗在底部排列。最多支持六人同时聊天。基于这种需求，叔决定写一个自定义控件PartyRoomLayout来完成。PartyRoomLayout直接继承ViewGroup，根据不同的显示模式来完成孩子的测量和布局。
+
+### 1人全屏 ###
+![](img/one.png)
+
+1人全屏其实就是前置摄像头预览效果。
+
+#### 前置摄像头预览 ####
+    //设置前置摄像头预览并开启
+    AgoraManager.getInstance()
+            .setupLocalVideo(getApplicationContext())
+            .startPreview();
+    //将摄像头预览的SurfaceView加入PartyRoomLayout
+    mPartyRoomLayout.addView(AgoraManager.getInstance().getLocalSurfaceView());
+
+#### PartyRoomLayout处理1人全屏 ####
+    /**
+     * 测量一个孩子的情况，孩子的宽高和父容器即PartyRoomLayout一样
+     */
+    private void measureOneChild(int widthMeasureSpec, int heightMeasureSpec) {
+        View child = getChildAt(0);
+        child.measure(widthMeasureSpec, heightMeasureSpec);
+    }
+
+    /**
+     * 布局一个孩子的情况
+     */
+    private void layoutOneChild() {
+        View child = getChildAt(0);
+        child.layout(0, 0, child.getMeasuredWidth(), child.getMeasuredHeight());
+    }
+
+
+
+
