@@ -129,7 +129,11 @@ public class PartyRoomLayout extends ViewGroup {
         getChildAt(mTopViewIndex).measure(widthMeasureSpec, childHeightMeasureSpec);
     }
 
+    /**
+     * 四分屏或者六分屏的测量
+     */
     private void measureMoreChildSplit(int widthMeasureSpec, int heightMeasureSpec) {
+        //列数为两列，计算行数
         int row = getChildCount() / 2;
         if (getChildCount() % 2 != 0) {
             row = row + 1;
@@ -142,7 +146,6 @@ public class PartyRoomLayout extends ViewGroup {
             int childWidthMeasureSpec = MeasureSpec.makeMeasureSpec(childWidth, MeasureSpec.EXACTLY);
             child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
         }
-
     }
 
     @Override
@@ -226,10 +229,11 @@ public class PartyRoomLayout extends ViewGroup {
             int right = left + child.getMeasuredWidth();
             int bottom = top + child.getMeasuredHeight();
             child.layout(left, top, right, bottom);
-            if ( (i + 1 )% 2 == 0) {
+            if ( (i + 1 )% 2 == 0) {//满足换行条件，更新left和top，布局下一行
                 left = 0;
                 top += child.getMeasuredHeight();
             } else {
+                //不满足换行条件，更新left值，继续布局一行中的下一个孩子
                 left += child.getMeasuredWidth();
             }
         }

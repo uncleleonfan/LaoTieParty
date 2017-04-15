@@ -86,5 +86,11 @@ public class PartyRoomActivity extends AppCompatActivity {
         }
     };
 
-
+    /**
+     * 返回时退出频道
+     */
+    @Override
+    public void onBackPressed() {
+        AgoraManager.getInstance().leaveChannel();
+    }
 }

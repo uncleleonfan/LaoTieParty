@@ -372,3 +372,51 @@ IRtcEngineEventHandler类里面封装了Agora SDK里面的很多事件回调，�
     };
 
 
+### 四分屏和六分屏 ###
+当有3个或者4个老铁开趴，界面显示成四分屏, 当有5个或者6个老铁开趴，界面切分成六分屏
+
+![](img/party.png)![](img/six.png)
+
+由于之前已经处理了新进用户就会创建SurfaceView加入PartyRoomLayout的逻辑，所以这里只需要处理四六分屏时的测量和布局
+
+#### 四六分屏测量 ####
+
+    private void measureMoreChildSplit(int widthMeasureSpec, int heightMeasureSpec) {
+        //列数为两列，计算行数
+        int row = getChildCount() / 2;
+        if (getChildCount() % 2 != 0) {
+            row = row + 1;
+        }
+		//根据行数平分高度
+        int childHeight = MeasureSpec.getSize(heightMeasureSpec) / row;
+		//宽度为父容器PartyRoomLayout的宽度一般，即屏宽的一半
+        int childWidth = MeasureSpec.getSize(widthMeasureSpec) / 2;
+        for (int i = 0; i < getChildCount(); i++) {
+            View child = getChildAt(i);
+            int childHeightMeasureSpec = MeasureSpec.makeMeasureSpec(childHeight, MeasureSpec.EXACTLY);
+            int childWidthMeasureSpec = MeasureSpec.makeMeasureSpec(childWidth, MeasureSpec.EXACTLY);
+            child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
+        }
+    }
+
+#### 四六分屏布局 ####
+    private void layoutMoreChildSplit() {
+        int left = 0;
+        int top = 0;
+        for (int i = 0; i < getChildCount(); i++) {
+            View child = getChildAt(i);
+            int right = left + child.getMeasuredWidth();
+            int bottom = top + child.getMeasuredHeight();
+            child.layout(left, top, right, bottom);
+            if ( (i + 1 )% 2 == 0) {//满足换行条件，更新left和top，布局下一行
+                left = 0;
+                top += child.getMeasuredHeight();
+            } else {
+                //不满足换行条件，更新left值，继续布局一行中的下一个孩子
+                left += child.getMeasuredWidth();
+            }
+        }
+    }
+
+
+
