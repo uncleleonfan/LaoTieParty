@@ -23,7 +23,7 @@ public class PartyRoomLayout extends ViewGroup {
     private static int DISPLAY_MODE_TOP_BOTTOM = 1;
 
     private int mDisplayMode = DISPLAY_MODE_SPLIT;
-    private int mTopViewIndex = 0;
+    private int mTopViewIndex = -1;
 
     public PartyRoomLayout(Context context) {
         this(context, null);
@@ -39,19 +39,25 @@ public class PartyRoomLayout extends ViewGroup {
         @Override
         public boolean onDoubleTap(MotionEvent e) {
             Log.d(TAG, "onDoubleTap: ");
-            findClickView(e);
-            mDisplayMode = DISPLAY_MODE_TOP_BOTTOM;
-            requestLayout();
+            handleDoubleTap(e);
             return true;
         }
 
-        private void findClickView(MotionEvent e) {
+        private void handleDoubleTap(MotionEvent e) {
             for (int i = 0; i < getChildCount(); i++) {
                 View view = getChildAt(i);
                 Rect rect = new Rect(view.getLeft(), view.getTop(), view.getRight(), view.getBottom());
                 if (rect.contains((int)e.getX(), (int)e.getY())) {
-                    mTopViewIndex = i;
-                    Log.d(TAG, "findClickView: " + mTopViewIndex);
+                    Log.d(TAG, "handleDoubleTap: " + mTopViewIndex + " " + i);
+                    if (mTopViewIndex == i) {
+                        mDisplayMode = DISPLAY_MODE_SPLIT;
+                        mTopViewIndex = -1;
+                    } else {
+                        mTopViewIndex = i;
+                        mDisplayMode = DISPLAY_MODE_TOP_BOTTOM;
+                    }
+                    requestLayout();
+                    break;
                 }
             }
         }
