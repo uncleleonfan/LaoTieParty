@@ -37,8 +37,8 @@ public class PartyRoomLayout extends ViewGroup {
     private GestureDetector.SimpleOnGestureListener mOnGestureListener = new GestureDetector.SimpleOnGestureListener() {
 
         @Override
-        public boolean onDoubleTapEvent(MotionEvent e) {
-            Log.d(TAG, "onDoubleTapEvent: ");
+        public boolean onDoubleTap(MotionEvent e) {
+            Log.d(TAG, "onDoubleTap: ");
             findClickView(e);
             mDisplayMode = DISPLAY_MODE_TOP_BOTTOM;
             requestLayout();
@@ -150,14 +150,13 @@ public class PartyRoomLayout extends ViewGroup {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        Log.d(TAG, "onInterceptTouchEvent: ");
         return true;
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        Log.d(TAG, "onTouchEvent: ");
-        return mGestureDetector.onTouchEvent(event);
+        mGestureDetector.onTouchEvent(event);
+        return true;
     }
 
     /**
