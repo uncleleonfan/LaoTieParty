@@ -83,53 +83,48 @@ public class PartyRoomLayout extends ViewGroup {
     }
 
     private void measureMoreChildTopBottom(int widthMeasureSpec, int heightMeasureSpec) {
-        int childCountExcludeTop = getChildCount() - 1;
-        if (childCountExcludeTop <= 3) {
-            for (int j = 0; j < getChildCount(); j++) {
-                if (j == mTopViewIndex) {
-                    measureTopView(widthMeasureSpec, heightMeasureSpec);
-                } else {
-                    int childWidth = MeasureSpec.getSize(widthMeasureSpec) / childCountExcludeTop;
-                    int size = MeasureSpec.getSize(heightMeasureSpec);
-                    int childHeightMeasureSpec = MeasureSpec.makeMeasureSpec(size / 2, MeasureSpec.EXACTLY);
-                    int childWidthMeasureSpec = MeasureSpec.makeMeasureSpec(childWidth, MeasureSpec.EXACTLY);
-                    getChildAt(j).measure(childWidthMeasureSpec, childHeightMeasureSpec);
-                }
-            }
-        } else if (childCountExcludeTop == 4) {
-            for (int k = 0; k < getChildCount(); k++) {
-                if (k == mTopViewIndex) {
-                    measureTopView(widthMeasureSpec, heightMeasureSpec);
-                } else {
-                    int childHeight = MeasureSpec.getSize(heightMeasureSpec) / 4;
-                    int childWidth = MeasureSpec.getSize(widthMeasureSpec) / 2;
-                    int childHeightMeasureSpec = MeasureSpec.makeMeasureSpec(childHeight, MeasureSpec.EXACTLY);
-                    int childWidthMeasureSpec = MeasureSpec.makeMeasureSpec(childWidth, MeasureSpec.EXACTLY);
-                    getChildAt(k).measure(childWidthMeasureSpec, childHeightMeasureSpec);
-                }
-            }
-        } else {
-            for (int m = 0; m < getChildCount(); m++) {
-                if (m == mTopViewIndex) {
-                    measureTopView(widthMeasureSpec, heightMeasureSpec);
-                } else {
-                    int row = childCountExcludeTop / 3;
-                    if (row  % 3 != 0) {
-                        row ++;
-                    }
-                    int childWidth = MeasureSpec.getSize(widthMeasureSpec) / 3;
-                    int childHeight = MeasureSpec.getSize(heightMeasureSpec) / row;
-                    int childHeightMeasureSpec = MeasureSpec.makeMeasureSpec(childHeight, MeasureSpec.EXACTLY);
-                    int childWidthMeasureSpec = MeasureSpec.makeMeasureSpec(childWidth, MeasureSpec.EXACTLY);
-                    View child = getChildAt(m);
-                    child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
-                }
+        for (int i = 0; i < getChildCount(); i++) {
+            if (i == mTopViewIndex) {
+                measureTopChild(widthMeasureSpec, heightMeasureSpec);
+            } else {
+                measureBottomChild(i, widthMeasureSpec, heightMeasureSpec);
             }
         }
-
     }
 
-    private void measureTopView(int widthMeasureSpec, int heightMeasureSpec) {
+    private void measureBottomChild(int i, int widthMeasureSpec, int heightMeasureSpec) {
+        //除去顶部孩子后还剩的孩子个数
+        int childCountExcludeTop = getChildCount() - 1;
+        //当底部孩子个数小于等于3时
+        if (childCountExcludeTop <= 3) {
+            //平分孩子宽度
+            int childWidth = MeasureSpec.getSize(widthMeasureSpec) / childCountExcludeTop;
+            int size = MeasureSpec.getSize(heightMeasureSpec);
+            int childHeightMeasureSpec = MeasureSpec.makeMeasureSpec(size / 2, MeasureSpec.EXACTLY);
+            int childWidthMeasureSpec = MeasureSpec.makeMeasureSpec(childWidth, MeasureSpec.EXACTLY);
+            getChildAt(i).measure(childWidthMeasureSpec, childHeightMeasureSpec);
+        } else if (childCountExcludeTop == 4) {//当底部孩子个数为4个时
+            int childWidth = MeasureSpec.getSize(widthMeasureSpec) / 2;
+            int childHeight = MeasureSpec.getSize(heightMeasureSpec) / 4;
+            int childHeightMeasureSpec = MeasureSpec.makeMeasureSpec(childHeight, MeasureSpec.EXACTLY);
+            int childWidthMeasureSpec = MeasureSpec.makeMeasureSpec(childWidth, MeasureSpec.EXACTLY);
+            getChildAt(i).measure(childWidthMeasureSpec, childHeightMeasureSpec);
+        } else {//当底部孩子大于4个时
+            //计算行的个数
+            int row = childCountExcludeTop / 3;
+            if (row  % 3 != 0) {
+                row ++;
+            }
+            int childWidth = MeasureSpec.getSize(widthMeasureSpec) / 3;
+            //底部孩子平分PartyRoomLayout一半的高度
+            int childHeight = (MeasureSpec.getSize(heightMeasureSpec) / 2) / row;
+            int childHeightMeasureSpec = MeasureSpec.makeMeasureSpec(childHeight, MeasureSpec.EXACTLY);
+            int childWidthMeasureSpec = MeasureSpec.makeMeasureSpec(childWidth, MeasureSpec.EXACTLY);
+            getChildAt(i).measure(childWidthMeasureSpec, childHeightMeasureSpec);
+        }
+    }
+
+    private void measureTopChild(int widthMeasureSpec, int heightMeasureSpec) {
         int size = MeasureSpec.getSize(heightMeasureSpec);
         int childHeightMeasureSpec = MeasureSpec.makeMeasureSpec(size / 2, MeasureSpec.EXACTLY);
         getChildAt(mTopViewIndex).measure(widthMeasureSpec, childHeightMeasureSpec);
@@ -209,20 +204,22 @@ public class PartyRoomLayout extends ViewGroup {
         topView.layout(0, 0, topView.getMeasuredWidth(), topView.getMeasuredHeight());
         int left = 0;
         int top = topView.getMeasuredHeight();
+        Log.d(TAG, "layoutMoreChildTopBottom: child count" + getChildCount());
         for (int i = 0; i < getChildCount(); i++) {
             if (i == mTopViewIndex) {
-                return;
+                continue;
             }
             View view = getChildAt(i);
-            int right = view.getMeasuredWidth();
+            int right = left + view.getMeasuredWidth();
             int bottom = top + view.getMeasuredHeight();
+            Log.d(TAG, "layoutMoreChildTopBottom: " + left + " " + top + " " + right + " " + bottom);
             view.layout(left, top, right, bottom);
             left = left + view.getMeasuredWidth();
             if (left >= getWidth()) {
+                Log.d(TAG, "layoutMoreChildTopBottom: next line");
                 left = 0;
                 top += view.getMeasuredHeight();
             }
-
         }
     }
 
