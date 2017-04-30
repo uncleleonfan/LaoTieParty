@@ -603,3 +603,7 @@ Agora SDK暂时没有提供API的接口文档，只提供了一些核心API的�
 
 不管怎么说，Agora又是一个国产优秀PaaS, 陌陌和小米都在使用它，希望它变得越来越好用。
 
+
+
+![Agora技术交流群](img/agora_community.png)
+
