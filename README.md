@@ -419,7 +419,10 @@ IRtcEngineEventHandler类里面封装了Agora SDK里面的很多事件回调，�
     }
 
 ### 双击上下分屏布局 ###
-在四六分屏模式下，双击一个小窗，窗会变大，其余小窗在底部排列。实现思路就是监听PartyRoomLayout的触摸时间，当是双击时，则重新布局。
+
+![](img/split.png)![](img/top_bottom.png)
+
+在四六分屏模式下，双击一个小窗，窗会变大，其余小窗在底部排列, 成上下分屏模式。实现思路就是监听PartyRoomLayout的触摸时间，当是双击时，则重新布局。
 
 #### 触摸事件处理 ####
     /**
@@ -571,4 +574,32 @@ IRtcEngineEventHandler类里面封装了Agora SDK里面的很多事件回调，�
             }
         }
     }
+
+
+# 趟坑记 #
+做第三方服务的集成，无非就是按照官方文档，完成SDK的集成以及自己需要的功能的实现。不管做哪个SDK的集成，都会碰到这样或者那样的坑，这也是很难避免，其实我们做SDK的集成就是一个趟坑的过程。接下来看看叔集成Agora SDK遇到了哪些问题。
+## 1. 不能在Android6.0的x86模拟器上运行 ##
+如果我们Demo在Android6.0的x86运行会报错：
+
+	java.lang.UnsatisfiedLinkError: dlopen failed: /data/app/com.leon.laotieparty-1/lib/x86/libHDACEngine.so: has text relocations
+
+当时在6.0以下的x86模拟器上可以正常运行，这是因为SDK提供给我们的x86库是存在问题的。
+
+
+## 2. 官方文档不详细 ##
+Agora SDK暂时没有提供API的接口文档，只提供了一些核心API的调用说明。我们在调用一些API的时候，并不能很好理解API的功能和含义。比如在VideoCanvas类中有三个渲染模式:
+
+	    public static final int RENDER_MODE_HIDDEN = 1;
+	    public static final int RENDER_MODE_FIT = 2;
+	    public static final int RENDER_MODE_ADAPTIVE = 3;
+官方文档没有对这三种模式有介绍，这里经过试验，如果调用
+
+        mRtcEngine.setupLocalVideo(new VideoCanvas(surfaceView, VideoCanvas.RENDER_MODE_HIDDEN, mLocalUid));
+
+不使用RENDER_MODE_HIDDEN, 视频内容就不会填充满SurfaceView。
+
+## 3. SDK封装 ##
+个人认为Agora SDK的封装程度可以再高一点，让开发者几行代码就能实现基本的功能。甚至可以对UI层做一次封装，提供UI的SDK,类似环信的EasyUI库，因为视频聊天界面逻辑还是比较复杂的。如果提供了这样的UI库，那么开发者就能迅速的实现功能和界面，然后再根据自己的需求做一些定制化。
+
+不管怎么说，Agora又是一个国产优秀PaaS, 陌陌和小米都在使用它，希望它变得越来越好用。
 
