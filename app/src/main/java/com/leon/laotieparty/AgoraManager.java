@@ -113,7 +113,7 @@ public class AgoraManager {
         //将SurfaceView保存起来在SparseArray中，后续会将其加入界面。key为视频的用户id，这里是本地视频, 默认id是0
         mSurfaceViews.put(mLocalUid, surfaceView);
         //设置本地视频，渲染模式选择VideoCanvas.RENDER_MODE_HIDDEN，如果选其他模式会出现视频不会填充满整个SurfaceView的情况，
-        //具体渲染模式的区别是什么，官方也没有详细的说明
+        //具体渲染模式参考官方文档https://docs.agora.io/cn/user_guide/API/android_api.html#set-local-video-view-setuplocalvideo
         mRtcEngine.setupLocalVideo(new VideoCanvas(surfaceView, VideoCanvas.RENDER_MODE_HIDDEN, mLocalUid));
         return this;//返回AgoraManager以作链式调用
     }
