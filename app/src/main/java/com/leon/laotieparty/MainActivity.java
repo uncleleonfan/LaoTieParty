@@ -20,13 +20,16 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //检查录音权限，如果没有，则申请
         if (checkSelfPermission(Manifest.permission.RECORD_AUDIO, PERMISSION_REQ_ID_RECORD_AUDIO)) {
+            //如果有录音权限，则再检查摄像头权限
             checkSelfPermission(Manifest.permission.CAMERA, PERMISSION_REQ_ID_CAMERA);
         }
     }
 
     public boolean checkSelfPermission(String permission, int requestCode) {
         if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+            //如果没有权限，则申请
             ActivityCompat.requestPermissions(this, new String[]{permission}, requestCode);
             return false;
         }
@@ -48,9 +51,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
             }
             case PERMISSION_REQ_ID_CAMERA: {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                } else {
+                if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                     Toast.makeText(this, "权限被拒绝，无法开pa", Toast.LENGTH_SHORT).show();
                     finish();
                 }
