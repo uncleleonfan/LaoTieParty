@@ -29,7 +29,7 @@ public class ChannelItemView extends RelativeLayout {
         mChannelId = (TextView) findViewById(R.id.channel_id);
     }
 
-    public void bindView(final ChannelItem channelItem) {
-        mChannelId.setText(channelItem.getChannelId());
+    public void bindView(final String channel) {
+        mChannelId.setText(channel);
     }
 }

@@ -43,12 +43,10 @@ public class ChannelActivity extends AppCompatActivity {
     /**
      *  模拟频道数据
      */
-    private List<ChannelItem> mockChannelList() {
-        List<ChannelItem> channelItems = new ArrayList<ChannelItem>();
+    private List<String> mockChannelList() {
+        List<String> channelItems = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
-            ChannelItem channelItem = new ChannelItem();
-            channelItem.setChannelId("Channel" + String.valueOf(i));
-            channelItems.add(channelItem);
+            channelItems.add("Channel" + i);
         }
         return channelItems;
     }

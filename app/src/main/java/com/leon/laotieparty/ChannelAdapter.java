@@ -15,9 +15,9 @@ import java.util.List;
 public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.ChannelViewHolder> {
 
     private Context mContext;
-    private List<ChannelItem> mList;
+    private List<String> mList;
 
-    public ChannelAdapter(Context context, List<ChannelItem> list) {
+    public ChannelAdapter(Context context, List<String> list) {
         mContext = context;
         mList = list;
     }
@@ -35,7 +35,7 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.ChannelV
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(mContext, PartyRoomActivity.class);
-                intent.putExtra("Channel", mList.get(position).getChannelId());
+                intent.putExtra("Channel", mList.get(position));
                 mContext.startActivity(intent);
             }
         });
