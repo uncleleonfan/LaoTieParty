@@ -78,6 +78,9 @@
 ### 创建频道列表 ###
 这里使用RecyclerView创建频道列表。
 
+	//添加依赖
+	compile 'com.android.support:recyclerview-v7:25.3.0'
+
     /**
      * 初始化频道列表
      */
