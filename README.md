@@ -608,5 +608,5 @@ Agora SDK暂时没有提供API的接口文档，只提供了一些核心API的�
 
 
 
-![Agora技术交流群](img/agora_community.png)
+![Agora技术交流群](img/agora.jpg)
 
