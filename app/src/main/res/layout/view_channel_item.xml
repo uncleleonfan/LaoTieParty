@@ -10,7 +10,7 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_gravity="center"
-        android:src="@mipmap/party"/>
+        android:src="@mipmap/ic_launcher_round"/>
 
 
     <TextView

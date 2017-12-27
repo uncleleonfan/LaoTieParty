@@ -93,15 +93,19 @@ public class AgoraManager {
      */
     public void init(Context context) {
         //创建RtcEngine对象，mRtcEventHandler为RtcEngine的回调
-        mRtcEngine = RtcEngine.create(context, context.getString(R.string.private_app_id), mRtcEventHandler);
-        //开启视频功能
-        mRtcEngine.enableVideo();
-        //视频配置，设置为360P
-        mRtcEngine.setVideoProfile(Constants.VIDEO_PROFILE_360P, false);
-        mRtcEngine.setChannelProfile(Constants.CHANNEL_PROFILE_COMMUNICATION);//设置为通信模式（默认）
+        try {
+            mRtcEngine = RtcEngine.create(context, context.getString(R.string.private_app_id), mRtcEventHandler);
+            //开启视频功能
+            mRtcEngine.enableVideo();
+            //视频配置，设置为360P
+            mRtcEngine.setVideoProfile(Constants.VIDEO_PROFILE_360P, false);
+            mRtcEngine.setChannelProfile(Constants.CHANNEL_PROFILE_COMMUNICATION);//设置为通信模式（默认）
 //        mRtcEngine.setChannelProfile(Constants.CHANNEL_PROFILE_LIVE_BROADCASTING);设置为直播模式
 //        mRtcEngine.setChannelProfile(Constants.CHANNEL_PROFILE_GAME);设置为游戏模式
 
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
